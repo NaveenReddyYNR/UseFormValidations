@@ -1,0 +1,287 @@
+import React, { useState } from 'react';
+import { Grid, Button, Container, Typography, MenuItem, RadioButton, FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { FormProvider, RHFTextField, RHFRadioGroup } from '../../../components/hook-form';
+import {
+  counterType,
+  nationalityList,
+  playerKeyList,
+  teamList,
+  sportList,
+  tournamentList,
+  playerRoleList
+} from '../../../mock-data/MockData'
+
+const useStyles = makeStyles((theme) => ({
+  btn: {
+    margin: 10
+  },
+  btnContainer: {
+    marginTop: 40
+  },
+  section: {
+    marginTop: 20,
+    border: "1px solid",
+    borderColor: theme.palette.primary.main,
+    padding: 20,
+    borderRadius: 10
+  },
+  sectionContainer: {
+    boarder: "1px solid #EBF8F2",
+    padding: 20,
+    borderRadius: 10
+  },
+  mandatory: {
+    color: "red"
+  }
+
+}));
+
+const validationSchema = yup.object({
+  sportId: yup.string().required('Sport is required'),
+  firstName: yup.string()
+    .required('First Name is required')
+    .matches(/^([a-zA-Z ]){3,25}$/, "First Name should be a valid with length between 3 and 25 characters"),
+  lastName: yup.string().required('Last Name is required')
+    .matches(/^([a-zA-Z ]){3,25}$/, "Last Name should be a valid with length between 3 and 25 characters"),
+  abbrevation: yup.string().required('Abbrevation is required')
+    .matches(/^([a-zA-Z ]){3,3}$/, "Abbrevation should be a valid with length 3 characters"),
+  playerRoleId: yup.string().required('Player Role is required'),
+  nationalityName: yup.string().required('Nationality is required'),
+  aboutPlayer: yup.string().required('About Player is required')
+    .matches(/^([a-zA-Z0-9]){20,300}$/, "About Player should be a valid with length between 20 and 300 characters"),
+  counter_type: yup.string().required('Counter type is required'),
+  tournamentId: yup.string().required('Tournament is required'),
+  teamId: yup.string().required('Team is required'),
+  rewardDate: yup.string().required('Reward date is required'),
+  player_key: yup.string().required('Player key is required'),
+  totalSupply: yup.string().required('Total supply is required')
+    .matches(/^[0-9]+$/, "Total supply must be only digits")
+    .min(1, 'Min value should be 1')
+    .max(4, 'Max vlaue should be less than 10000'),
+  houseWalletAddress: yup.string().required('House wallet address is required')
+    .matches(/^([a-fA-F0-9 ])+$/, "House wallet address should be a valid"),
+
+});
+
+export default function PlayerCounterCreation() {
+  const classes = useStyles()
+  const [value, setValue] = React.useState('Tournament');
+
+  const initialValues = {
+    sportId: '1',
+    firstName: '',
+    lastName: '',
+    abbrevation: '',
+    playerRoleId: '1',
+    nationalityName: '1',
+    aboutPlayer: '',
+    tournamentId: '1',
+    teamId: '1',
+    rewardDate: '',
+    totalSupply: '',
+    houseWalletAddress: '',
+    mobileIconUrl: '',
+    webIconUrl: '',
+    status: '',
+    player_key: '1',
+    counter_type: '0'
+  };
+
+  const handleChange = (event) => {
+    setValue(event.target.value);
+  };
+
+  const methods = useForm({
+    mode: 'onChange',
+    resolver: yupResolver(validationSchema),
+    defaultValues: initialValues,
+  });
+  const { handleSubmit } = methods;
+
+  const onSubmit = async (data) => {
+    console.log(data)
+  };
+
+  return (
+    <>
+      <Container maxWidth="xl">
+        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+          <div className={classes.section}>
+            <Typography variant="h6">Player details</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography>Sport
+                  <span className={classes.mandatory}>*</span>
+                </Typography>
+                <RHFTextField name="sportId" select >
+                  {sportList.map((option, index) => (
+                    <MenuItem key={index} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </RHFTextField>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography>First Name
+                  <span className={classes.mandatory}>*</span>
+                </Typography>
+                <RHFTextField name="firstName" />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography>Last Name
+                  <span className={classes.mandatory}>*</span>
+                </Typography>
+                <RHFTextField name="lastName" />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography>Abbreviation
+                  <span className={classes.mandatory}>*</span>
+                </Typography>
+                <RHFTextField name="abbrevation" />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography>Player Role
+                  <span className={classes.mandatory}>*</span>
+                </Typography>
+                <RHFTextField name="playerRoleId" select>
+                  {playerRoleList.map((option, index) => (
+                    <MenuItem key={index} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </RHFTextField>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography>Nationality
+                  <span className={classes.mandatory}>*</span>
+                </Typography>
+                <RHFTextField name="nationalityName" select>
+                  {nationalityList.map((option, index) => (
+                    <MenuItem key={index} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </RHFTextField>
+              </Grid>
+              <Grid item xs={12} sm={6} md={6}>
+                <Typography>About Player
+                  <span className={classes.mandatory}>*</span>
+                </Typography>
+                <RHFTextField name="aboutPlayer" multiline
+                  minRows={2} maxRows={4} />
+              </Grid>
+            </Grid>
+          </div>
+          <div className={classes.section}>
+            {/* <RHFRadioGroup name="counter_type" options={counterType} /> */}
+            <RadioGroup
+              row
+              aria-labelledby="demo-row-radio-buttons-group-label"
+              name="row-radio-buttons-group"
+              value={value}
+              onChange={handleChange}
+            >
+              <FormControlLabel value="Tournament" control={<Radio />} label={<Typography variant="h6">Tournament</Typography>} />
+              <FormControlLabel
+                value="disabled"
+                disabled
+                control={<Radio />}
+                label={<Typography variant="h6" style={{ color: '#C6C6C6' }}>Perpetual</Typography>}
+              />
+            </RadioGroup>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography>Tournament
+                  <span className={classes.mandatory}>*</span>
+                </Typography>
+                <RHFTextField name="tournamentId" select>
+                  {tournamentList.map((option, index) => (
+                    <MenuItem key={index} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </RHFTextField>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography>Team
+                  <span className={classes.mandatory}>*</span>
+                </Typography>
+                <RHFTextField name="teamId" select>
+                  {teamList.map((option, index) => (
+                    <MenuItem key={index} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </RHFTextField>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography>Reward Date
+                  <span className={classes.mandatory}>*</span>
+                </Typography>
+                <RHFTextField name="rewardDate" type="date" />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography>Player Key
+                  <span className={classes.mandatory}>*</span>
+                </Typography>
+                <RHFTextField name="player_key" select>
+                  {playerKeyList.map((option, index) => (
+                    <MenuItem key={index} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </RHFTextField>
+              </Grid>
+            </Grid>
+          </div>
+          <div className={classes.section}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography>Total Supply to be minted
+                  <span className={classes.mandatory}>*</span>
+                </Typography>
+                <RHFTextField name="totalSupply" />
+              </Grid>
+              <Grid item xs={12} sm={6} md={6}>
+                <Typography>House Wallet Respository Address
+                  <span className={classes.mandatory}>*</span>
+                </Typography>
+                <RHFTextField name="houseWalletAddress" />
+              </Grid>
+
+            </Grid>
+          </div>
+          <div className={classes.section}>
+            <Typography variant="h6">Media Object / Rendering</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography>Mobile Icon</Typography>
+                <input type="file" name="mobileIconUrl" />
+              </Grid>
+              <Grid item xs={12} sm={6} md={6}>
+                <Typography>Web Icon</Typography>
+                <input type="file" name="webIconUrl" />
+              </Grid>
+
+            </Grid>
+          </div>
+          <Grid container justifyContent='end' className={classes.btnContainer}>
+            <Button variant="outlined" className={classes.btn}>
+              Cancel
+            </Button>
+            <Button variant="contained" type="submit" className={classes.btn}>
+              Save
+            </Button>
+            <Button variant="contained" className={classes.btn}>
+              Mint
+            </Button>
+          </Grid>
+        </FormProvider>
+      </Container>
+    </>
+  );
+}
